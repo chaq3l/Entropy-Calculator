@@ -29,8 +29,10 @@ def SampEn(data, m, r):
 
     B = phi(data, m, r)
     A = phi(data, m + 1, r)
-
-    output = -np.log(A / B)
+    if B>0:
+        output = -np.log(A / B)
+    else:
+        output = None
 
     return output
 

@@ -12,9 +12,12 @@ from PyQt5.QtWidgets import QSizePolicy, QAction, QFileDialog, QMessageBox
 from PyQt5.QtGui import QIcon, QKeySequence
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from try_parse import try_parse_int
+from try_parse import try_parse_float
 import mpl_toolkits.mplot3d as p3
 import pandas as pd
 import numpy as np
+import os.path
 
 from ApEn_final import ApEn as ApEn
 from SampEn_final import SampEn as SampEn
@@ -40,6 +43,19 @@ class Ui_MainWindow(object):
         self.comboBox_data_standardisation_text = ["normal", "standardise"]
         self.comboBox_data_standarization_first_fill_ticket = 0
         self.resultsPopup = QMessageBox()
+        self.calculating_data_length = 5000
+
+        self.ApEn_m_value = 2
+        self.ApEn_r_value = 0.25
+        self.ApEn_N_start_value = 0
+        self.ApEn_N_stop_value = 0
+
+        self.SampEn_m_value = 2
+        self.SampEn_r_value = 0.25
+        self.SampEn_N_start_value = 0
+        self.SampEn_N_stop_value = 0
+
+
 
         # self.chosen_data_header_3d_x_axis = ''
         # self.chosen_data_header_3d_y_axis = ''
@@ -621,25 +637,101 @@ class Ui_MainWindow(object):
         calc_ApEn_action = QAction(QIcon(), 'ApEn...', self.toolBar)
         calc_ApEn_action.setStatusTip('ApEn')
         calc_ApEn_action.setShortcut(QKeySequence.Open)
-        calc_ApEn_action.triggered.connect(self.approximate_entropy_calculation)
+        calc_ApEn_action.triggered.connect(self.calculate_ApEn_only)
 
         calc_SampEn_action = QAction(QIcon(), 'SampEn...', self.toolBar)
         calc_SampEn_action.setStatusTip('SampEn')
         calc_SampEn_action.setShortcut(QKeySequence.Open)
-        calc_SampEn_action.triggered.connect(self.sample_entropy_calculation)
+        calc_SampEn_action.triggered.connect(self.calculate_SampEn_only)
 
-        calc_CSV_action = QAction(QIcon(), 'Calc. to CSV...', self.toolBar)
-        calc_CSV_action.setStatusTip('CSV')
-        calc_CSV_action.setShortcut(QKeySequence.Open)
-        #calc_CSV_action.triggered.connect()
+        calc_SampEn_and_ApEn_action = QAction(QIcon(), 'Both...', self.toolBar)
+        calc_SampEn_and_ApEn_action.setStatusTip('ApEn and SampEn')
+        calc_SampEn_and_ApEn_action.setShortcut(QKeySequence.Open)
+        calc_SampEn_and_ApEn_action.triggered.connect(self.calculate_Apen_and_Sampen_only)
+
+        calc_XLSX_action = QAction(QIcon(), 'Calc. to XLSX...', self.toolBar)
+        calc_XLSX_action.setStatusTip('XLSX')
+        calc_XLSX_action.setShortcut(QKeySequence.Open)
+        calc_XLSX_action.triggered.connect(self.results_to_excel)
 
         calc_SQL_action = QAction(QIcon(), 'Calc. to SQL...', self.toolBar)
         calc_SQL_action.setStatusTip('SQL')
         calc_SQL_action.setShortcut(QKeySequence.Open)
         # calc_CSV_action.triggered.connect()
 
-        self.toolBar.addActions([open_file_action, calc_ApEn_action, calc_SampEn_action, calc_SQL_action,
-                                 calc_CSV_action])
+        self.toolBar.addActions([open_file_action, calc_ApEn_action, calc_SampEn_action, calc_SampEn_and_ApEn_action,
+                                 calc_SQL_action, calc_XLSX_action])
+
+    def ApEn_parameters(self, enable_or_disable):
+        if enable_or_disable == False:
+            self.ApEn_m_value = 2
+            self.ApEn_r_value = 0.25
+            self.ApEn_N_start_value = 0
+            self.ApEn_N_stop_value = self.calculating_data_length
+        else:
+            ApEn_m_value = str(self.checkBox_ApEn_m.text())
+            ApEn_m_value = try_parse_int(ApEn_m_value)
+            if ApEn_m_value == None or ApEn_m_value == 0:
+                self.ApEn_m_value = 2
+            else:
+                self.ApEn_m_value = ApEn_m_value
+
+            ApEn_r_value = str(self.checkBox_ApEn_r.text())
+            ApEn_r_value = try_parse_float(ApEn_r_value)
+            if ApEn_r_value == None or ApEn_r_value == 0.0:
+                self.ApEn_r_value = 0.25
+            else:
+                self.ApEn_r_value = ApEn_r_value
+
+            ApEn_N_start_value = str(self.checkBox_ApEn_N_start.text())
+            ApEn_N_start_value = try_parse_int(ApEn_N_start_value)
+            if ApEn_N_start_value == None or ApEn_N_start_value == 0:
+                self.ApEn_N_start_value = 0
+            else:
+                self.ApEn_N_start_value = ApEn_N_start_value
+
+            ApEn_N_stop_value = str(self.checkBox_ApEn_N_stop.text())
+            ApEn_N_stop_value = try_parse_int(ApEn_N_stop_value)
+            if ApEn_N_stop_value == None or ApEn_N_stop_value == 0:
+                self.ApEn_N_stop_value = self.calculating_data_length
+            else:
+                self.ApEn_N_stop_value = ApEn_N_stop_value
+
+    def SampEn_parameters(self, enable_or_disable):
+        if enable_or_disable == False:
+            self.SampEn_m_value = 2
+            self.SampEn_r_value = 0.25
+            self.SampEn_N_start_value = 0
+            self.SampEn_N_stop_value = self.calculating_data_length
+        else:
+            SampEn_m_value = str(self.checkBox_SampEn_m.text())
+            SampEn_m_value = try_parse_int(SampEn_m_value)
+            if SampEn_m_value == None or SampEn_m_value == 0:
+                self.SampEn_m_value = 2
+            else:
+                self.SampEn_m_value = SampEn_m_value
+
+            SampEn_r_value = str(self.checkBox_SampEn_r.text())
+            SampEn_r_value = try_parse_float(SampEn_r_value)
+            if SampEn_r_value == None or SampEn_r_value == 0.0:
+                self.SampEn_r_value = 0.25
+            else:
+                self.SampEn_r_value = SampEn_r_value
+
+            SampEn_N_start_value = str(self.checkBox_SampEn_N_start.text())
+            SampEn_N_start_value = try_parse_int(SampEn_N_start_value)
+            if SampEn_N_start_value == None or SampEn_N_start_value == 0:
+                self.SampEn_N_start_value = 0
+            else:
+                self.SampEn_N_start_value = SampEn_N_start_value
+
+            SampEn_N_stop_value = str(self.checkBox_SampEn_N_stop.text())
+            SampEn_N_stop_value = try_parse_int(SampEn_N_stop_value)
+            if SampEn_N_stop_value == None or SampEn_N_stop_value == 0:
+                self.SampEn_N_stop_value = self.calculating_data_length
+            else:
+                self.SampEn_N_stop_value = SampEn_N_stop_value
+
 
     def enable_ApEn_uncustomary_parameters(self):
         # Karol2
@@ -653,6 +745,7 @@ class Ui_MainWindow(object):
             self.button_ApEn_N_start_description.setEnabled(False)
             self.button_ApEn_N_stop_description.setEnabled(False)
             self.pushButton_ApEn_calculation_parameters.setEnabled(False)
+
         else:
             self.checkBox_ApEn_m.setEnabled(True)
             self.checkBox_ApEn_r.setEnabled(True)
@@ -920,7 +1013,24 @@ class Ui_MainWindow(object):
     #     self.ax2.plot3D(self.x, self.y, self.z)
     #     self.canvas2.draw()
 
+    def calculate_ApEn_only(self):
+        ApEn = self.approximate_entropy_calculation()
+        self.popup(ApEn, None, "ApEn")
+
+    def calculate_SampEn_only(self):
+        SampEn = self.sample_entropy_calculation()
+        self.popup(None, SampEn, "SampEn")
+
+    def calculate_Apen_and_Sampen_only(self):
+        ApEn = self.approximate_entropy_calculation()
+        SampEn = self.sample_entropy_calculation()
+        self.popup(ApEn, SampEn, "Entropy results")
+
     def approximate_entropy_calculation(self):
+
+
+        #wpisać wszędzie self.ApEn_r i ApEn_m value zamiast z palca
+
         data = self.data
         cat = self.comboBox_2d_chart_axis.currentText()
         if (cat == '') or (not self.radioButton_Chebyshev.isChecked() and
@@ -937,14 +1047,21 @@ class Ui_MainWindow(object):
             except Exception as ex:
                 print("chosen_data_header error, chosen_data_header = "+chosen_data_header)
                 pass  # do job to handle: Exception occurred while converting to int
+            self.calculating_data_length = len(data[[chosen_data_header]].values)
+            if self.pushButton_ApEn_calculation_standard_parameters.isChecked():
+                self.ApEn_parameters(False)
+            else:
+                self.ApEn_parameters(True)
 
-            approximate_entropy = ApEn(data[[chosen_data_header]].values, 2, 0.25,
+            approximate_entropy = ApEn(data[[chosen_data_header]].values[self.ApEn_N_start_value:
+                                                                         self.ApEn_N_stop_value],
+                                       self.ApEn_m_value, self.ApEn_r_value,
                                        self.radioButton_Chebyshev.isChecked(),
                                        self.radioButton_Euclidean.isChecked(),
                                        self.checkBox_normal_ApEny_precision.isChecked(),
                                        self.checkBox_approx_ApEn_precision.isChecked())
 
-            self.popup(approximate_entropy, "ApEn")
+            return approximate_entropy
 
     def sample_entropy_calculation(self):
         data = self.data
@@ -961,47 +1078,105 @@ class Ui_MainWindow(object):
                 print("chosen_data_header error, chosen_data_header = "+chosen_data_header)
                 pass  # do job to handle: Exception occurred while converting to int
 
-            sample_entropy = SampEn(data[[chosen_data_header]].values, 2, 0.25)
+            self.calculating_data_length = len(data[[chosen_data_header]].values)
+            if self.pushButton_SampEn_calculation_standard_parameters.isChecked():
+                self.SampEn_parameters(False)
+            else:
+                self.SampEn_parameters(True)
+
+            sample_entropy = SampEn(data[[chosen_data_header]].values[self.SampEn_N_start_value:self.SampEn_N_stop_value],
+                                    self.SampEn_m_value, self.SampEn_r_value)
             #self.comboBox_2d_chart_axis.setText('SampEn = '+str(sample_entropy))
             #print(sample_entropy)
-            self.popup(sample_entropy, "SampEn")
+            return sample_entropy
 
-    def popup(self, item, entropy_type):
-        results = item
+    def popup(self, ApEn, SampEn, entropy_type):
+        ApEn_results = ApEn
+        SampEn_results = SampEn
         self.resultsPopup.setWindowTitle(entropy_type)
         # approx_Chebyshev, approx_Euclidean, Chebyshev_full_method, Euclidean_full_method
-        if entropy_type == "ApEn":
-            if results[0]==None:
+
+        if ApEn_results:
+            if ApEn_results[0]==None:
                 approx_Chebyshev = ''
             else:
-                approx_Chebyshev = 'Approximate Chebyshev: ' + str(results[0]) + '\n'
-            if results[1] == None:
+                approx_Chebyshev = 'Approximate Chebyshev: ' + str(ApEn_results[0]) + '\n'
+            if ApEn_results[1] == None:
                 approx_Euclidean = ''
             else:
-                approx_Euclidean = 'Approximate Euclidean: ' + str(results[1]) + '\n'
-            if results[2] == None:
+                approx_Euclidean = 'Approximate Euclidean: ' + str(ApEn_results[1]) + '\n'
+            if ApEn_results[2] == None:
                 Chebyshev_full_method = ''
             else:
-                Chebyshev_full_method = 'Chebyshev: ' + str(results[2]) + '\n'
-            if results[3] == None:
+                Chebyshev_full_method = 'Chebyshev: ' + str(ApEn_results[2]) + '\n'
+            if ApEn_results[3] == None:
                 Euclidean_full_method = ''
             else:
-                Euclidean_full_method = 'Euclidean: ' + str(results[3])
-            self.results_text.setText(approx_Chebyshev
-                                      + approx_Euclidean
-                                      + Chebyshev_full_method
-                                      + Euclidean_full_method)
-            self.resultsPopup.setText(approx_Chebyshev
-                                      + approx_Euclidean
-                                      + Chebyshev_full_method
-                                      + Euclidean_full_method)
-        else:
-            self.results_text.setText("SampEn: " + str(results))
-            self.resultsPopup.setText("SampEn: " + str(results))
-        self.resultsPopup.setGeometry(700, 300, 100, 100)
-        self.resultsPopup.exec_()
+                Euclidean_full_method = 'Euclidean: ' + str(ApEn_results[3]) + '\n'
 
-    # przekazywanie do obliczania: data, data path, N_start, N_stop, m, r, entropy type, header
+            ApEn_results_text = approx_Chebyshev + approx_Euclidean + Chebyshev_full_method + Euclidean_full_method
+
+        else:
+            ApEn_results_text = ''
+
+        if SampEn_results:
+            SampEn_results_text = 'SampEn: ' + str(SampEn_results)
+
+        else:
+            SampEn_results_text = ''
+
+        if not ApEn_results_text + SampEn_results_text == '':
+            self.results_text.setText(ApEn_results_text + SampEn_results_text)
+            self.resultsPopup.setText(ApEn_results_text + SampEn_results_text)
+
+            self.resultsPopup.setGeometry(700, 300, 100, 100)
+            self.resultsPopup.exec_()
+
+    def results_to_excel(self):
+        cat = self.comboBox_2d_chart_axis.currentText()
+        if (cat == ''):
+            pass
+        else:
+            data_column = []
+
+            # poprawić, żeby nie zapisywał path tylko nazwę pliku
+            data_column.append(str(self.path))
+            #approx_Chebyshev, approx_Euclidean, Chebyshev_full_method, Euclidean_full_method
+            ApEn_results = self.approximate_entropy_calculation()
+            SampEn_results = self.sample_entropy_calculation()
+            data_column.append(str(ApEn_results[0]))
+            data_column.append(str(ApEn_results[1]))
+            data_column.append(str(ApEn_results[2]))
+            data_column.append(str(ApEn_results[3]))
+            data_column.append(str(SampEn_results))
+
+
+            if os.path.isfile('calculation results.xlsx'):
+
+
+                df2 = pd.read_excel('calculation results.xlsx', sheet_name='Sheet1')
+                df2.drop('Unnamed: 0', axis=1, inplace=True)
+                df1 = pd.DataFrame([data_column[:]],
+
+                                   index=[str(len(df2[['file_name']].values)+1)],
+
+                                   columns=['file_name', 'approx_Chebyshev', 'approx_Euclidean', 'Chebyshev_full_method',
+                                            'Euclidean_full_method', 'Sampen'])
+
+                df3 = pd.concat([df2, df1])
+                df3.to_excel('calculation results.xlsx')
+            else:
+                df1 = pd.DataFrame([data_column[:]],
+
+                                   index=['0'],
+
+                                   columns=['file_name', 'approx_Chebyshev', 'approx_Euclidean', 'Chebyshev_full_method',
+                                            'Euclidean_full_method', 'Sampen'])
+                df1.to_excel('calculation results.xlsx')
+
+
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
