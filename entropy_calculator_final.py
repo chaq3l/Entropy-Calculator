@@ -962,21 +962,20 @@ class Ui_MainWindow(object):
 
     def update_2d_chart(self):
         # self.dropdown3.clear()
-        colors=["b", "r", "g", "y", "k", "c"]
+        colors = ["b", "r", "g", "y", "k", "c"]
         self.ax1.clear()
         self.chosen_data_header = self.comboBox_2d_chart_axis.currentText()
         cat = self.comboBox_2d_chart_axis.currentText()
         data = self.data
         data_header = self.data_header
 
-
-        if (len(data) != 0):
-            if(cat== ''):
+        if len(data) != 0:
+            if cat == '':
                 pass
                 # print('empty dropdown3')
 
             else:
-                if(data_header==0):
+                if data_header == 0:
                     #print(data[['x']].values[0:5])
                     #self.data_dictionary.plot(kind="line", x=None, y=str(cat), ax=self.ax1,
                     #                                                   c=colors[0], label=str(self.chosen_data_header))
@@ -1091,36 +1090,35 @@ class Ui_MainWindow(object):
             return sample_entropy
 
     def popup(self, ApEn, SampEn, entropy_type):
-        ApEn_results = ApEn
-        SampEn_results = SampEn
+
         self.resultsPopup.setWindowTitle(entropy_type)
         # approx_Chebyshev, approx_Euclidean, Chebyshev_full_method, Euclidean_full_method
 
-        if ApEn_results:
-            if ApEn_results[0]==None:
+        if ApEn:
+            if ApEn[0]==None:
                 approx_Chebyshev = ''
             else:
-                approx_Chebyshev = 'Approximate Chebyshev: ' + str(ApEn_results[0]) + '\n'
-            if ApEn_results[1] == None:
+                approx_Chebyshev = 'Approximate Chebyshev: ' + str(ApEn[0]) + '\n'
+            if ApEn[1] == None:
                 approx_Euclidean = ''
             else:
-                approx_Euclidean = 'Approximate Euclidean: ' + str(ApEn_results[1]) + '\n'
-            if ApEn_results[2] == None:
+                approx_Euclidean = 'Approximate Euclidean: ' + str(ApEn[1]) + '\n'
+            if ApEn[2] == None:
                 Chebyshev_full_method = ''
             else:
-                Chebyshev_full_method = 'Chebyshev: ' + str(ApEn_results[2]) + '\n'
-            if ApEn_results[3] == None:
+                Chebyshev_full_method = 'Chebyshev: ' + str(ApEn[2]) + '\n'
+            if ApEn[3] == None:
                 Euclidean_full_method = ''
             else:
-                Euclidean_full_method = 'Euclidean: ' + str(ApEn_results[3]) + '\n'
+                Euclidean_full_method = 'Euclidean: ' + str(ApEn[3]) + '\n'
 
             ApEn_results_text = approx_Chebyshev + approx_Euclidean + Chebyshev_full_method + Euclidean_full_method
 
         else:
             ApEn_results_text = ''
 
-        if SampEn_results:
-            SampEn_results_text = 'SampEn: ' + str(SampEn_results)
+        if SampEn:
+            SampEn_results_text = 'SampEn: ' + str(SampEn)
 
         else:
             SampEn_results_text = ''
@@ -1134,48 +1132,47 @@ class Ui_MainWindow(object):
 
     def results_to_excel(self):
         cat = self.comboBox_2d_chart_axis.currentText()
-        if (cat == ''):
+        if cat == '':
             pass
         else:
-            data_column = []
 
-            # poprawić, żeby nie zapisywał path tylko nazwę pliku
-            data_column.append(str(self.path))
-            #approx_Chebyshev, approx_Euclidean, Chebyshev_full_method, Euclidean_full_method
             ApEn_results = self.approximate_entropy_calculation()
             SampEn_results = self.sample_entropy_calculation()
-            data_column.append(str(ApEn_results[0]))
-            data_column.append(str(ApEn_results[1]))
-            data_column.append(str(ApEn_results[2]))
-            data_column.append(str(ApEn_results[3]))
-            data_column.append(str(SampEn_results))
+            ApEn_results.append(SampEn_results)
 
+            head, tail = os.path.split(self.path)
 
             if os.path.isfile('calculation results.xlsx'):
 
-
                 df2 = pd.read_excel('calculation results.xlsx', sheet_name='Sheet1')
                 df2.drop('Unnamed: 0', axis=1, inplace=True)
-                df1 = pd.DataFrame([data_column[:]],
 
-                                   index=[str(len(df2[['file_name']].values)+1)],
+                df1 = pd.DataFrame([[head, tail, self.chosen_data_header, *ApEn_results]],
 
-                                   columns=['file_name', 'approx_Chebyshev', 'approx_Euclidean', 'Chebyshev_full_method',
+                                   index=[len(df2[['file name']].values)],
+
+                                   columns=['file path', 'file name', 'data header', 'approx_Chebyshev',
+                                            'approx_Euclidean', 'Chebyshev_full_method',
                                             'Euclidean_full_method', 'Sampen'])
 
                 df3 = pd.concat([df2, df1])
+                self.results_text.setText(str(df3[['file name', 'data header', 'approx_Chebyshev',
+                                            'approx_Euclidean', 'Chebyshev_full_method',
+                                            'Euclidean_full_method', 'Sampen']].tail(5)))
                 df3.to_excel('calculation results.xlsx')
             else:
-                df1 = pd.DataFrame([data_column[:]],
+                df1 = pd.DataFrame([[head, tail, self.chosen_data_header, *ApEn_results]],
 
-                                   index=['0'],
 
-                                   columns=['file_name', 'approx_Chebyshev', 'approx_Euclidean', 'Chebyshev_full_method',
+                                   index=[0],
+
+                                   columns=['file path', 'file name', 'data header', 'approx_Chebyshev',
+                                            'approx_Euclidean', 'Chebyshev_full_method',
                                             'Euclidean_full_method', 'Sampen'])
+                self.results_text.setText(str(df1[['file name', 'data header', 'approx_Chebyshev',
+                                               'approx_Euclidean', 'Chebyshev_full_method',
+                                               'Euclidean_full_method', 'Sampen']]))
                 df1.to_excel('calculation results.xlsx')
-
-
-
 
 
     def retranslateUi(self, MainWindow):
