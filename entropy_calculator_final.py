@@ -14,13 +14,17 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from try_parse import try_parse_int
 from try_parse import try_parse_float
+from read_csv_path import chose_csv_file
 import mpl_toolkits.mplot3d as p3
 import pandas as pd
 import numpy as np
 import os.path
+import glob
+import time
 
 from ApEn_final import ApEn as ApEn
 from SampEn_final import SampEn as SampEn
+from csv_data_lenght_checker import chose_file as get_csv_lengths
 
 
 class Ui_MainWindow(object):
@@ -29,7 +33,7 @@ class Ui_MainWindow(object):
 
         self.data_header = 0
         self.data_header_length = 0
-        self.data_header_cells = list()
+        self.data_header_cells = []
         self.data = []
         self.data_progenitor = []
         self.data_dictionary = {}
@@ -39,11 +43,12 @@ class Ui_MainWindow(object):
         self.x = []
         self.y = []
         self.z = []
-        self.filterTypes = 'Text Document Csv (*.csv);; Python (*.py);; (*.txt)'
+        self.filterTypes = 'comma-separated values Csv (*.csv);; Python (*.py);; Text Document(*.txt)'
         self.comboBox_data_standardisation_text = ["normal", "standardise"]
         self.comboBox_data_standarization_first_fill_ticket = 0
         self.resultsPopup = QMessageBox()
         self.calculating_data_length = 5000
+        # self.data_characteristic = "Data characteristic"
 
         self.ApEn_m_value = 2
         self.ApEn_r_value = 0.25
@@ -55,13 +60,12 @@ class Ui_MainWindow(object):
         self.SampEn_N_start_value = 0
         self.SampEn_N_stop_value = 0
 
-
-
         # self.chosen_data_header_3d_x_axis = ''
         # self.chosen_data_header_3d_y_axis = ''
         # self.chosen_data_header_3d_z_axis = ''
 
     def setupUi(self, MainWindow):
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -476,6 +480,7 @@ class Ui_MainWindow(object):
 
         self.Results_tab = QtWidgets.QWidget()
         self.Results_tab.setObjectName("Results")
+
         self.verticalLayout_Results_inside_tap = QtWidgets.QVBoxLayout(self.Results_tab)
         self.verticalLayout_Results_inside_tap.setObjectName("verticalLayout_Results")
 
@@ -501,6 +506,7 @@ class Ui_MainWindow(object):
         self.comboBox_data_standarization.addItems(self.comboBox_data_standardisation_text)
         self.verticalLayout.addWidget(self.comboBox_data_standarization)
         self.comboBox_data_standarization.currentIndexChanged.connect(self.normalize_data)
+        self.comboBox_data_standarization.setEnabled(False)
 
         self.charts_tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -524,6 +530,9 @@ class Ui_MainWindow(object):
         self.comboBox_2d_chart_axis = QtWidgets.QComboBox(self.chart_2d_tab)
         self.comboBox_2d_chart_axis.setObjectName("comboBox_2d_chart_axis")
         self.verticalLayout_2d_chart.addWidget(self.comboBox_2d_chart_axis)
+
+        self.Label_data_characteristic = QtWidgets.QLabel(self.chart_2d_tab)
+        self.verticalLayout_2d_chart.addWidget(self.Label_data_characteristic)
 
         # załadowanie wykresu po pojawienu się wartości w okienku "dropbox"
         self.comboBox_2d_chart_axis.currentIndexChanged.connect(self.update_2d_chart)
@@ -654,14 +663,93 @@ class Ui_MainWindow(object):
         calc_XLSX_action.setShortcut(QKeySequence.Open)
         calc_XLSX_action.triggered.connect(self.results_to_excel)
 
-        calc_SQL_action = QAction(QIcon(), 'Calc. to SQL...', self.toolBar)
-        calc_SQL_action.setStatusTip('SQL')
-        calc_SQL_action.setShortcut(QKeySequence.Open)
+        calc_csv_lengths_action = QAction(QIcon(), '.csv length...', self.toolBar)
+        calc_csv_lengths_action.setStatusTip('length')
+        calc_csv_lengths_action.setShortcut(QKeySequence.Open)
+        calc_csv_lengths_action.triggered.connect(self.csv_length)
+
+        calc_all_csv_to_XLSX_action = QAction(QIcon(), 'Calc. FULL XLSX...', self.toolBar)
+        calc_all_csv_to_XLSX_action.setStatusTip('FULL XLSX')
+        calc_all_csv_to_XLSX_action.setShortcut(QKeySequence.Open)
+        calc_all_csv_to_XLSX_action.triggered.connect(self.all_files_in_folder_to_xlsx)
+
+        # calc_SQL_action = QAction(QIcon(), 'Calc. to SQL...', self.toolBar)
+        # calc_SQL_action.setStatusTip('SQL')
+        # calc_SQL_action.setShortcut(QKeySequence.Open)
         # calc_CSV_action.triggered.connect()
 
         self.toolBar.addActions([open_file_action, calc_ApEn_action, calc_SampEn_action, calc_SampEn_and_ApEn_action,
-                                 calc_SQL_action, calc_XLSX_action])
+                                 calc_csv_lengths_action, calc_XLSX_action, calc_all_csv_to_XLSX_action])
 
+    # -------------------------------------------------------------------------
+    # moduł ładowania plików csv do pamięci aplikacji
+    # rozpoczyna się na funkji file_open
+    # kończy się na all_files_in_folder_to_xlsx (z tym że file_open i all_files_in_folder_to_xlsx powstały w celu dużego
+    # usprawnienia prac badawczych i wykraczają one poza
+    # wymagania funkcjonalne oraz mogą się one okazać w niektórych scenariuszach NIEBEZPIECZNE!!!!!)
+    # -------------------------------------------------------------------------
+    def csv_length(self):
+        get_csv_lengths(MainWindow)
+
+    def file_open(self):
+
+        path = chose_csv_file(MainWindow)
+        if path:
+            self.path = path
+            self.data_header = self.identify_header(path)
+
+            self.data = pd.read_csv(path, header=self.data_header)
+            self.data_progenitor = self.data
+            self.comboBox_data_standarization.setEnabled(True)
+            self.load_dropdown()
+            self.normalize_data()
+        else:
+            pass
+
+    def all_files_in_folder_to_xlsx(self):
+        path = chose_csv_file(MainWindow)
+        if path:
+            t1 = time.process_time()
+            head, tail = os.path.split(path)
+
+            list_of_files_in_directory = glob.glob(str(head) + "/*.csv")
+            # print(glob.glob(str(head) + "/*.csv"))
+            # for i in range (0,2):
+            #     file = list_of_files_in_directory[i]
+            for file in list_of_files_in_directory:
+                path = file
+                if path:
+                    try:
+                        with open(path, 'r') as f:
+                            text = f.read()
+                            f.close()
+                    except Exception as e:
+                        self.dialog_message(str(e))
+                    else:
+                        self.path = path
+                        self.data_header = self.identify_header(path)
+
+                        self.data = pd.read_csv(path, header=self.data_header)
+                        self.data_progenitor = self.data
+                        self.comboBox_data_standarization.setEnabled(True)
+                        self.normalize_data()
+                        # napisać słownik z gdzie będą dane i w oznaczeniu tytuły kolumn (przy odczycie wystarczy odczyt z
+                        # header cells użyć do odczytu (można header cells też zrobić jako słownik gdzie zwracana będize
+                        # długość)
+
+                        self.load_dropdown()
+                        self.results_to_excel()
+            t2 = time.process_time()
+            print('computation time = ' + str(t2-t1)+' s')
+        else:
+            pass
+
+    # -------------------------------------------------------------------------
+    # moduł zarządzania interfejsem
+    # został zilustrowany w modelu architektury systemu
+    # rozpoczyna się od funkcji ApEn_parameters
+    # kończy na funkcji update_2d_chart
+    # -------------------------------------------------------------------------
     def ApEn_parameters(self, enable_or_disable):
         if enable_or_disable == False:
             self.ApEn_m_value = 2
@@ -732,7 +820,6 @@ class Ui_MainWindow(object):
             else:
                 self.SampEn_N_stop_value = SampEn_N_stop_value
 
-
     def enable_ApEn_uncustomary_parameters(self):
         # Karol2
         if self.pushButton_ApEn_calculation_standard_parameters.isChecked():
@@ -779,28 +866,6 @@ class Ui_MainWindow(object):
             self.button_SampEn_N_start_description.setEnabled(True)
             self.button_SampEn_N_stop_description.setEnabled(True)
             self.pushButton_SampEn_calculation_parameters.setEnabled(True)
-
-    def normalize_data(self):
-        if self.comboBox_data_standarization.currentText() == '' or self.data_header_length == 0:
-            return
-        else:
-            if self.comboBox_data_standarization.currentText() == "standardise":
-                x = self.data
-                # linijka poniżej traci referencje, żeby nie zostawała można też użyć Lib/copy.py
-                x = (x+x)/2
-                if self.data_header_length == 0:
-                    return
-                else:
-                    for i in range(0,  self.data_header_length):
-                        # print(self.data_dictionary[i])
-                        data = self.data[[self.data_header_dictionary[i]]]
-                        self.data[[self.data_header_dictionary[i]]] = (data - np.mean(data)) / np.std(data)
-                    self.data_progenitor = x
-            else:
-                self.data = self.data_progenitor
-
-            self.draw_plot_3d()
-            self.update_2d_chart()
 
     def draw_plot_3d(self):
 
@@ -856,7 +921,6 @@ class Ui_MainWindow(object):
         # self.y = self.data_dictionary[self.data_header_dictionary[y]][:, 0]
         # self.z = self.data_dictionary[self.data_header_dictionary[z]][:, 0]
 
-
         self.x = data[[x]].values[:, 0]
         self.y = data[[y]].values[:, 0]
         self.z = data[[z]].values[:, 0]
@@ -864,131 +928,6 @@ class Ui_MainWindow(object):
         self.ax2 = p3.Axes3D(self.fig2)
         self.ax2.plot3D(self.x, self.y, self.z)
         self.canvas2.draw()
-
-    def file_open(self):
-        path, _ = QFileDialog.getOpenFileName(
-            parent=MainWindow,
-            caption='Open file',
-            directory='',
-            filter=self.filterTypes
-        )
-
-        if path:
-            try:
-                with open(path, 'r') as f:
-                    text = f.read()
-                    f.close()
-            except Exception as e:
-                self.dialog_message(str(e))
-            else:
-                self.path = path
-                self.data_header = self.identify_header(path)
-
-                self.data = pd.read_csv(path, header=self.data_header)
-                self.data_progenitor = self.data
-                # napisać słownik z gdzie będą dane i w oznaczeniu tytuły kolumn (przy odczycie wystarczy odczyt z
-                # header cells użyć do odczytu (można header cells też zrobić jako słownik gdzie zwracana będize
-                # długość)
-
-                self.load_dropdown()
-
-
-
-    def fill_drop_downs(self):
-        self.comboBox_2d_chart_axis.clear()
-
-        self.comboBox_2d_chart_axis.addItems(self.data_header_cells)
-
-        self.comboBox_3d_chart_x.clear()
-        self.comboBox_3d_chart_y.clear()
-        self.comboBox_3d_chart_z.clear()
-
-        self.comboBox_3d_chart_x.addItems(self.data_header_cells)
-        self.comboBox_3d_chart_y.addItems(self.data_header_cells)
-        self.comboBox_3d_chart_z.addItems(self.data_header_cells)
-
-    def load_dictionaries(self):
-        self.data_dictionary = {}
-        self.data_header_dictionary = {}
-        if (self.data_header == None):
-            for i in range(0, self.data_header_length):
-                self.data_dictionary[i] = self.data[[int(self.data_header_cells[i])]].values
-                self.data_header_dictionary[i] = int(self.data_header_cells[i])
-        else:
-            for i in range(0, self.data_header_length):
-                self.data_dictionary[i] = self.data[[str(self.data_header_cells[i])]].values
-                self.data_header_dictionary[i] = str(self.data_header_cells[i])
-
-    def load_dropdown(self):
-
-        data = self.data
-        data_header = self.data_header
-
-        if (len(data) != 0):
-            if (data_header == None):
-
-                self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
-                self.data_header_cells = self.header_length_to_list_of_digit_string(self.data_header_length)
-                self.load_dictionaries()
-
-                self.fill_drop_downs()
-
-            else:
-                if (data_header == 0):
-                    # print(pd.read_csv(self.path, header=0).columns.values.tolist())
-                    self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
-                    self.data_header_cells = pd.read_csv(self.path, header=0).columns.values.tolist()
-                    self.load_dictionaries()
-                    self.fill_drop_downs()
-
-                else:
-                    # print(len(pd.read_csv(self.path, header=0).columns.values.tolist()))
-                    print("data_header error")
-
-    def identify_header(self, path, n=5, th=0.9):
-        df1 = pd.read_csv(path, header='infer', nrows=n)
-        df2 = pd.read_csv(path, header=None, nrows=n)
-        sim = (df1.dtypes.values == df2.dtypes.values).mean()
-        return 0 if sim < th else None
-
-    #     0 - header jest
-    #     1 - headera nie ma
-
-    def header_length_to_list_of_digit_string(self, header_length):
-        list_of_digits = list()
-        for i in range(0, header_length):
-            list_of_digits.append(str(i))
-        return list_of_digits
-
-    def update_2d_chart(self):
-        # self.dropdown3.clear()
-        colors = ["b", "r", "g", "y", "k", "c"]
-        self.ax1.clear()
-        self.chosen_data_header = self.comboBox_2d_chart_axis.currentText()
-        cat = self.comboBox_2d_chart_axis.currentText()
-        data = self.data
-        data_header = self.data_header
-
-        if len(data) != 0:
-            if cat == '':
-                pass
-                # print('empty dropdown3')
-
-            else:
-                if data_header == 0:
-                    #print(data[['x']].values[0:5])
-                    #self.data_dictionary.plot(kind="line", x=None, y=str(cat), ax=self.ax1,
-                    #                                                   c=colors[0], label=str(self.chosen_data_header))
-                    data.plot(kind="line", x=None, y=str(cat), ax=self.ax1, c=colors[0], label=str(self.chosen_data_header))
-                else:
-                    # print(data[[0]].values[0:4])
-                    #self.data_dictionary.plot(kind="line", x=None, y=int(cat), ax=self.ax1,
-                    #                                                   c=colors[0], label=str(self.chosen_data_header))
-                    data.plot(kind="line", x=None, y=int(cat), ax=self.ax1, c=colors[0], label=str(self.chosen_data_header))
-
-        # np.arange(0, len(data[0].values), 1), data[0].vales,
-
-        self.fig.canvas.draw_idle()
 
     # def update_3d_chart(self):
     ## funkcja tylko temporalna, w przyszłości do zmiany
@@ -1012,6 +951,147 @@ class Ui_MainWindow(object):
     #     self.ax2.plot3D(self.x, self.y, self.z)
     #     self.canvas2.draw()
 
+    def fill_drop_downs(self):
+        self.comboBox_2d_chart_axis.clear()
+
+        self.comboBox_2d_chart_axis.addItems(self.data_header_cells)
+
+        self.comboBox_3d_chart_x.clear()
+        self.comboBox_3d_chart_y.clear()
+        self.comboBox_3d_chart_z.clear()
+
+        self.comboBox_3d_chart_x.addItems(self.data_header_cells)
+        self.comboBox_3d_chart_y.addItems(self.data_header_cells)
+        self.comboBox_3d_chart_z.addItems(self.data_header_cells)
+
+    def load_dropdown(self):
+
+        data = self.data
+        data_header = self.data_header
+
+        if len(data) != 0:
+            if data_header == None:
+
+                self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
+                self.data_header_cells = self.header_length_to_list_of_digit_string(self.data_header_length)
+                self.load_dictionaries()
+
+                self.fill_drop_downs()
+
+            else:
+                if data_header == 0:
+                    # print(pd.read_csv(self.path, header=0).columns.values.tolist())
+                    self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
+                    self.data_header_cells = pd.read_csv(self.path, header=0).columns.values.tolist()
+                    self.load_dictionaries()
+                    self.fill_drop_downs()
+
+                else:
+                    # print(len(pd.read_csv(self.path, header=0).columns.values.tolist()))
+                    print("data_header error")
+
+    def update_2d_chart(self):
+        # self.dropdown3.clear()
+        colors = ["b", "r", "g", "y", "k", "c"]
+        self.ax1.clear()
+        self.chosen_data_header = self.comboBox_2d_chart_axis.currentText()
+        cat = self.comboBox_2d_chart_axis.currentText()
+        data = self.data
+        data_header = self.data_header
+
+        if len(data) != 0:
+            if cat == '':
+                pass
+                # print('empty dropdown3')
+
+            else:
+                if data_header == 0:
+                    # print(data[['x']].values[0:5])
+                    # self.data_dictionary.plot(kind="line", x=None, y=str(cat), ax=self.ax1,
+                    #                                                   c=colors[0], label=str(self.chosen_data_header))
+                    data.plot(kind="line", x=None, y=str(cat), ax=self.ax1, c=colors[0],
+                              label=str(self.chosen_data_header))
+                    data_mean = np.mean(self.data[[str(cat)]])
+                    std_data = np.std(self.data[[str(cat)]])
+
+                    characteristic_text = "Data characteristic: standard deviation = " + str(std_data[0]) + ", mean = "\
+                                          + str(data_mean[0])
+                    self.Label_data_characteristic.setText(characteristic_text)
+                else:
+                    # print(data[[0]].values[0:4])
+                    # self.data_dictionary.plot(kind="line", x=None, y=int(cat), ax=self.ax1,
+                    #                                                   c=colors[0], label=str(self.chosen_data_header))
+                    data.plot(kind="line", x=None, y=int(cat), ax=self.ax1, c=colors[0],
+                              label=str(self.chosen_data_header))
+                    data_mean = np.mean(self.data[[int(cat)]])
+                    std_data = np.std(self.data[[int(cat)]])
+
+                    characteristic_text = "Data characteristic: standard deviation = " + str(std_data[0]) \
+                                          + ", mean = " \
+                                          + str(data_mean[0])
+                    self.Label_data_characteristic.setText(characteristic_text)
+
+        # np.arange(0, len(data[0].values), 1), data[0].vales,
+
+        self.fig.canvas.draw_idle()
+
+    # -------------------------------------------------------------------------
+    # moduł danych
+    # został opisany w architekturze systemu
+    # rozpoczyna się od funkcji niormalize data (chociarz zachodzi ona w pewien sposób jeszcze na moduł zarządzania
+    # interfejsem)
+    # końszy się na funkcji sample_entropy_calculation (ostatnie funkcje to odnoga przygotowująca krotkę jaką zwracają
+    # funkcje SampEn i ApEn)
+    # -------------------------------------------------------------------------
+    def normalize_data(self):
+        if self.comboBox_data_standarization.currentText() == '' or self.data_header_length == 0:
+            return
+        else:
+            if self.comboBox_data_standarization.currentText() == "standardise":
+                leave_reference = self.data
+                # linijka poniżej traci referencje, żeby nie zostawała można też użyć Lib/copy.py
+                leave_reference = (leave_reference + leave_reference) / 2
+                if self.data_header_length == 0:
+                    return
+                else:
+                    for i in range(0,  self.data_header_length):
+                        # print(self.data_dictionary[i])
+                        data = self.data[[self.data_header_dictionary[i]]]
+                        self.data[[self.data_header_dictionary[i]]] = (data - np.mean(data)) / np.std(data)
+
+                    self.data_progenitor = leave_reference
+            else:
+                self.data = self.data_progenitor
+
+            self.load_dropdown()
+
+    def load_dictionaries(self):
+        self.data_dictionary = {}
+        self.data_header_dictionary = {}
+        if (self.data_header == None):
+            for i in range(0, self.data_header_length):
+                self.data_dictionary[i] = self.data[[int(self.data_header_cells[i])]].values
+                self.data_header_dictionary[i] = int(self.data_header_cells[i])
+        else:
+            for i in range(0, self.data_header_length):
+                self.data_dictionary[i] = self.data[[str(self.data_header_cells[i])]].values
+                self.data_header_dictionary[i] = str(self.data_header_cells[i])
+
+    def identify_header(self, path, n=5, th=0.9):
+        df1 = pd.read_csv(path, header='infer', nrows=n)
+        df2 = pd.read_csv(path, header=None, nrows=n)
+        sim = (df1.dtypes.values == df2.dtypes.values).mean()
+        return 0 if sim < th else None
+
+    #     0 - header jest
+    #     1 - headera nie ma
+
+    def header_length_to_list_of_digit_string(self, header_length):
+        list_of_digits = list()
+        for i in range(0, header_length):
+            list_of_digits.append(str(i))
+        return list_of_digits
+
     def calculate_ApEn_only(self):
         ApEn = self.approximate_entropy_calculation()
         self.popup(ApEn, None, "ApEn")
@@ -1026,9 +1106,6 @@ class Ui_MainWindow(object):
         self.popup(ApEn, SampEn, "Entropy results")
 
     def approximate_entropy_calculation(self):
-
-
-        #wpisać wszędzie self.ApEn_r i ApEn_m value zamiast z palca
 
         data = self.data
         cat = self.comboBox_2d_chart_axis.currentText()
@@ -1088,7 +1165,10 @@ class Ui_MainWindow(object):
             #self.comboBox_2d_chart_axis.setText('SampEn = '+str(sample_entropy))
             #print(sample_entropy)
             return sample_entropy
-
+    # -------------------------------------------------------------------------
+    # moduł eksportu i odczytu danych
+    # rozpoczyna się funkcją popup i kończy na funkcji results to excel
+    # -------------------------------------------------------------------------
     def popup(self, ApEn, SampEn, entropy_type):
 
         self.resultsPopup.setWindowTitle(entropy_type)
@@ -1141,10 +1221,13 @@ class Ui_MainWindow(object):
             ApEn_results.append(SampEn_results)
 
             head, tail = os.path.split(self.path)
+            folder_up = os.path.dirname(head)
+            folder_up = os.path.basename(folder_up)
+            end_file_name = str(folder_up) + ' entropy calculation results.xlsx'
 
-            if os.path.isfile('calculation results.xlsx'):
+            if os.path.isfile(end_file_name):
 
-                df2 = pd.read_excel('calculation results.xlsx', sheet_name='Sheet1')
+                df2 = pd.read_excel(end_file_name, sheet_name='Sheet1')
                 df2.drop('Unnamed: 0', axis=1, inplace=True)
 
                 df1 = pd.DataFrame([[head, tail, self.chosen_data_header, *ApEn_results]],
@@ -1159,7 +1242,7 @@ class Ui_MainWindow(object):
                 self.results_text.setText(str(df3[['file name', 'data header', 'approx_Chebyshev',
                                             'approx_Euclidean', 'Chebyshev_full_method',
                                             'Euclidean_full_method', 'Sampen']].tail(5)))
-                df3.to_excel('calculation results.xlsx')
+                df3.to_excel(end_file_name)
             else:
                 df1 = pd.DataFrame([[head, tail, self.chosen_data_header, *ApEn_results]],
 
@@ -1172,8 +1255,7 @@ class Ui_MainWindow(object):
                 self.results_text.setText(str(df1[['file name', 'data header', 'approx_Chebyshev',
                                                'approx_Euclidean', 'Chebyshev_full_method',
                                                'Euclidean_full_method', 'Sampen']]))
-                df1.to_excel('calculation results.xlsx')
-
+                df1.to_excel(end_file_name)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -1221,7 +1303,7 @@ class Ui_MainWindow(object):
         self.button_3d_chart_description.setText(_translate("MainWindow", "Chose axes to display:"))
         self.charts_tabWidget.setTabText(self.charts_tabWidget.indexOf(self.chart_3d_tab), _translate("MainWindow", "3d chart"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
-
+        self.Label_data_characteristic.setText(_translate("MainWindow", "Data characteristic: "))
 
 
 if __name__ == "__main__":

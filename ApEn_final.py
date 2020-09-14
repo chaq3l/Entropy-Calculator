@@ -59,16 +59,16 @@ def ApEn(data, m, r, Chebyshev, Euclidean, calc_normal, calc_approx):
         #dokończyć
 
 
-    B = phi(data, m, r)
-    A = phi(data, m + 1, r)
+    m_calculation = phi(data, m, r)
+    m_plus_one_calculation = phi(data, m + 1, r)
 
     if calc_normal:
-        if B[2] != None:
-            Chebyshev_full_method = B[2] - A[2]
+        if m_calculation[2] != None:
+            Chebyshev_full_method = m_calculation[2] - m_plus_one_calculation[2]
         else:
             Chebyshev_full_method = None
-        if B[3] != None:
-            Euclidean_full_method = B[3] - A[3]
+        if m_calculation[3] != None:
+            Euclidean_full_method = m_calculation[3] - m_plus_one_calculation[3]
         else:
             Euclidean_full_method = None
 
@@ -78,8 +78,8 @@ def ApEn(data, m, r, Chebyshev, Euclidean, calc_normal, calc_approx):
 
     if calc_approx:
         if Chebyshev:
-            B_approx_Chebyshev = B[0]
-            A_approx_Chebyshev = A[0]
+            B_approx_Chebyshev = m_calculation[0]
+            A_approx_Chebyshev = m_plus_one_calculation[0]
             C = []
             for i in range(len(A_approx_Chebyshev)):
                 C.append(np.log(B_approx_Chebyshev[i] / A_approx_Chebyshev[i]))
@@ -88,8 +88,8 @@ def ApEn(data, m, r, Chebyshev, Euclidean, calc_normal, calc_approx):
             approx_Chebyshev = None
 
         if Euclidean:
-            B_approx_Euclidean = B[1]
-            A_approx_Euclidean = A[1]
+            B_approx_Euclidean = m_calculation[1]
+            A_approx_Euclidean = m_plus_one_calculation[1]
             C = []
             for i in range(len(A_approx_Euclidean)):
                 C.append(np.log(B_approx_Euclidean[i] / A_approx_Euclidean[i]))
