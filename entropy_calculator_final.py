@@ -254,45 +254,45 @@ class Ui_MainWindow(object):
         self.verticalLayout_SampEn_inside_tap = QtWidgets.QVBoxLayout(self.SampEn_tab)
         self.verticalLayout_SampEn_inside_tap.setObjectName("verticalLayout_4")
 
-        self.horizontalLayout_SampEn_precision = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_SampEn_precision.setContentsMargins(-1, 0, -1, -1)
-        self.horizontalLayout_SampEn_precision.setObjectName("horizontalLayout_SampEn_precision")
+        # self.horizontalLayout_SampEn_precision = QtWidgets.QHBoxLayout()
+        # self.horizontalLayout_SampEn_precision.setContentsMargins(-1, 0, -1, -1)
+        # self.horizontalLayout_SampEn_precision.setObjectName("horizontalLayout_SampEn_precision")
 
-        self.pushButton_SampEn_precision = QtWidgets.QLabel(self.SampEn_tab)
-        self.pushButton_SampEn_precision.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_SampEn_precision.sizePolicy().hasHeightForWidth())
-        self.pushButton_SampEn_precision.setSizePolicy(sizePolicy)
-        self.pushButton_SampEn_precision.setObjectName("pushButton_ApEn_precision_2")
-        #self.pushButton_SampEn_precision.setAlignment(Qt.AlignCenter)
-        self.horizontalLayout_SampEn_precision.addWidget(self.pushButton_SampEn_precision)
+        # self.pushButton_SampEn_precision = QtWidgets.QLabel(self.SampEn_tab)
+        # self.pushButton_SampEn_precision.setEnabled(False)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.pushButton_SampEn_precision.sizePolicy().hasHeightForWidth())
+        # self.pushButton_SampEn_precision.setSizePolicy(sizePolicy)
+        # self.pushButton_SampEn_precision.setObjectName("pushButton_ApEn_precision_2")
+        # #self.pushButton_SampEn_precision.setAlignment(Qt.AlignCenter)
+        # self.horizontalLayout_SampEn_precision.addWidget(self.pushButton_SampEn_precision)
+        #
+        # self.checkBox_approx_SampEn_precision = QtWidgets.QCheckBox(self.SampEn_tab)
+        # self.checkBox_approx_SampEn_precision.setEnabled(False)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.checkBox_approx_SampEn_precision.sizePolicy().hasHeightForWidth())
+        # self.checkBox_approx_SampEn_precision.setSizePolicy(sizePolicy)
+        # self.checkBox_approx_SampEn_precision.setObjectName("checkBox_approx_SampEn_precision")
+        # self.horizontalLayout_SampEn_precision.addWidget(self.checkBox_approx_SampEn_precision)
 
-        self.checkBox_approx_SampEn_precision = QtWidgets.QCheckBox(self.SampEn_tab)
-        self.checkBox_approx_SampEn_precision.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkBox_approx_SampEn_precision.sizePolicy().hasHeightForWidth())
-        self.checkBox_approx_SampEn_precision.setSizePolicy(sizePolicy)
-        self.checkBox_approx_SampEn_precision.setObjectName("checkBox_approx_SampEn_precision")
-        self.horizontalLayout_SampEn_precision.addWidget(self.checkBox_approx_SampEn_precision)
-
-        self.checkBox_normal_SampEny_precision = QtWidgets.QCheckBox(self.SampEn_tab)
-        self.checkBox_normal_SampEny_precision.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkBox_normal_SampEny_precision.sizePolicy().hasHeightForWidth())
-        self.checkBox_normal_SampEny_precision.setSizePolicy(sizePolicy)
-        self.checkBox_normal_SampEny_precision.setAcceptDrops(False)
-        self.checkBox_normal_SampEny_precision.setAutoFillBackground(False)
-        self.checkBox_normal_SampEny_precision.setChecked(True)
-        self.checkBox_normal_SampEny_precision.setObjectName("checkBox_normal_SampEny_precision")
-        self.horizontalLayout_SampEn_precision.addWidget(self.checkBox_normal_SampEny_precision)
-
-        self.verticalLayout_SampEn_inside_tap.addLayout(self.horizontalLayout_SampEn_precision)
+        # self.checkBox_normal_SampEny_precision = QtWidgets.QCheckBox(self.SampEn_tab)
+        # self.checkBox_normal_SampEny_precision.setEnabled(False)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.checkBox_normal_SampEny_precision.sizePolicy().hasHeightForWidth())
+        # self.checkBox_normal_SampEny_precision.setSizePolicy(sizePolicy)
+        # self.checkBox_normal_SampEny_precision.setAcceptDrops(False)
+        # self.checkBox_normal_SampEny_precision.setAutoFillBackground(False)
+        # self.checkBox_normal_SampEny_precision.setChecked(True)
+        # self.checkBox_normal_SampEny_precision.setObjectName("checkBox_normal_SampEny_precision")
+        # self.horizontalLayout_SampEn_precision.addWidget(self.checkBox_normal_SampEny_precision)
+        #
+        # self.verticalLayout_SampEn_inside_tap.addLayout(self.horizontalLayout_SampEn_precision)
 
         self.horizontalLayout_SampEn_distance_measure = QtWidgets.QHBoxLayout()
         self.horizontalLayout_SampEn_distance_measure.setContentsMargins(-1, 0, -1, -1)
@@ -301,7 +301,7 @@ class Ui_MainWindow(object):
         self.pushButton_SampEn_measure = QtWidgets.QLabel(self.SampEn_tab)
         self.pushButton_SampEn_measure.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(3)
+        sizePolicy.setHorizontalStretch(2)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_SampEn_measure.sizePolicy().hasHeightForWidth())
         self.pushButton_SampEn_measure.setSizePolicy(sizePolicy)
@@ -309,7 +309,7 @@ class Ui_MainWindow(object):
         #self.pushButton_SampEn_measure.setAlignment(Qt.AlignCenter)
         self.horizontalLayout_SampEn_distance_measure.addWidget(self.pushButton_SampEn_measure)
 
-        self.radioButton_Euclidean_2 = QtWidgets.QRadioButton(self.SampEn_tab)
+        self.radioButton_Euclidean_2 = QtWidgets.QCheckBox(self.SampEn_tab)
         self.radioButton_Euclidean_2.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(2)
@@ -320,7 +320,7 @@ class Ui_MainWindow(object):
         self.radioButton_Euclidean_2.setObjectName("radioButton_Euclidean_2")
         self.horizontalLayout_SampEn_distance_measure.addWidget(self.radioButton_Euclidean_2)
 
-        self.radioButton_Chebyshev_2 = QtWidgets.QRadioButton(self.SampEn_tab)
+        self.radioButton_Chebyshev_2 = QtWidgets.QCheckBox(self.SampEn_tab)
         self.radioButton_Chebyshev_2.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(2)
@@ -331,16 +331,16 @@ class Ui_MainWindow(object):
         self.radioButton_Chebyshev_2.setObjectName("radioButton_Chebyshev_2")
         self.horizontalLayout_SampEn_distance_measure.addWidget(self.radioButton_Chebyshev_2)
 
-        self.radioButton_Sampen_distance_measure_both = QtWidgets.QRadioButton(self.SampEn_tab)
-        self.radioButton_Sampen_distance_measure_both.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(2)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.radioButton_Sampen_distance_measure_both.sizePolicy().hasHeightForWidth())
-        self.radioButton_Sampen_distance_measure_both.setSizePolicy(sizePolicy)
-        self.radioButton_Sampen_distance_measure_both.setChecked(False)
-        self.radioButton_Sampen_distance_measure_both.setObjectName("radioButton_Sampen_distance_measure_both")
-        self.horizontalLayout_SampEn_distance_measure.addWidget(self.radioButton_Sampen_distance_measure_both)
+        # self.radioButton_Sampen_distance_measure_both = QtWidgets.QRadioButton(self.SampEn_tab)
+        # self.radioButton_Sampen_distance_measure_both.setEnabled(False)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(2)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.radioButton_Sampen_distance_measure_both.sizePolicy().hasHeightForWidth())
+        # self.radioButton_Sampen_distance_measure_both.setSizePolicy(sizePolicy)
+        # self.radioButton_Sampen_distance_measure_both.setChecked(False)
+        # self.radioButton_Sampen_distance_measure_both.setObjectName("radioButton_Sampen_distance_measure_both")
+        # self.horizontalLayout_SampEn_distance_measure.addWidget(self.radioButton_Sampen_distance_measure_both)
 
         self.verticalLayout_SampEn_inside_tap.addLayout(self.horizontalLayout_SampEn_distance_measure)
 
@@ -680,7 +680,6 @@ class Ui_MainWindow(object):
 
         self.toolBar.addActions([open_file_action, calc_ApEn_action, calc_SampEn_action, calc_SampEn_and_ApEn_action,
                                  calc_csv_lengths_action, calc_XLSX_action, calc_all_csv_to_XLSX_action])
-
     # -------------------------------------------------------------------------
     # moduł ładowania plików csv do pamięci aplikacji
     # rozpoczyna się na funkji file_open
@@ -928,7 +927,6 @@ class Ui_MainWindow(object):
         self.ax2 = p3.Axes3D(self.fig2)
         self.ax2.plot3D(self.x, self.y, self.z)
         self.canvas2.draw()
-
     # def update_3d_chart(self):
     ## funkcja tylko temporalna, w przyszłości do zmiany
     #     data = self.data
@@ -950,7 +948,6 @@ class Ui_MainWindow(object):
     #     self.ax2 = p3.Axes3D(self.fig2)
     #     self.ax2.plot3D(self.x, self.y, self.z)
     #     self.canvas2.draw()
-
     def fill_drop_downs(self):
         self.comboBox_2d_chart_axis.clear()
 
@@ -964,6 +961,16 @@ class Ui_MainWindow(object):
         self.comboBox_3d_chart_y.addItems(self.data_header_cells)
         self.comboBox_3d_chart_z.addItems(self.data_header_cells)
 
+    def check_if_new_data_header_contains_previous_data_header(self):
+        currentText = str(self.comboBox_2d_chart_axis.currentText())
+        if currentText in self.data_header_cells:
+            #print("contains")
+            self.data_header_cells.remove(currentText)
+            self.data_header_cells.insert(0, currentText)
+        else:
+            pass
+            #print("not contains")
+
     def load_dropdown(self):
 
         data = self.data
@@ -975,7 +982,7 @@ class Ui_MainWindow(object):
                 self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
                 self.data_header_cells = self.header_length_to_list_of_digit_string(self.data_header_length)
                 self.load_dictionaries()
-
+                self.check_if_new_data_header_contains_previous_data_header()
                 self.fill_drop_downs()
 
             else:
@@ -984,6 +991,7 @@ class Ui_MainWindow(object):
                     self.data_header_length = len(pd.read_csv(self.path, header=0).columns.values.tolist())
                     self.data_header_cells = pd.read_csv(self.path, header=0).columns.values.tolist()
                     self.load_dictionaries()
+                    self.check_if_new_data_header_contains_previous_data_header()
                     self.fill_drop_downs()
 
                 else:
@@ -1026,9 +1034,9 @@ class Ui_MainWindow(object):
                     data_mean = np.mean(self.data[[int(cat)]])
                     std_data = np.std(self.data[[int(cat)]])
 
-                    characteristic_text = "Data characteristic: standard deviation = " + str(std_data[0]) \
+                    characteristic_text = "Data characteristic: standard deviation = " + str(std_data.values[0]) \
                                           + ", mean = " \
-                                          + str(data_mean[0])
+                                          + str(data_mean.values[0])
                     self.Label_data_characteristic.setText(characteristic_text)
 
         # np.arange(0, len(data[0].values), 1), data[0].vales,
@@ -1049,7 +1057,7 @@ class Ui_MainWindow(object):
         else:
             if self.comboBox_data_standarization.currentText() == "standardise":
                 leave_reference = self.data
-                # linijka poniżej traci referencje, żeby nie zostawała można też użyć Lib/copy.py
+                # linia poniżej traci referencje, żeby nie zostawała można też użyć Lib/copy.py
                 leave_reference = (leave_reference + leave_reference) / 2
                 if self.data_header_length == 0:
                     return
@@ -1082,10 +1090,8 @@ class Ui_MainWindow(object):
         df2 = pd.read_csv(path, header=None, nrows=n)
         sim = (df1.dtypes.values == df2.dtypes.values).mean()
         return 0 if sim < th else None
-
     #     0 - header jest
     #     1 - headera nie ma
-
     def header_length_to_list_of_digit_string(self, header_length):
         list_of_digits = list()
         for i in range(0, header_length):
@@ -1093,11 +1099,17 @@ class Ui_MainWindow(object):
         return list_of_digits
 
     def calculate_ApEn_only(self):
+        t1 = time.process_time()
         ApEn = self.approximate_entropy_calculation()
+        t2 = time.process_time()
+        print("ApEn calculation time = " + str(t2 - t1) + " secs")
         self.popup(ApEn, None, "ApEn")
 
     def calculate_SampEn_only(self):
+        t1 = time.process_time()
         SampEn = self.sample_entropy_calculation()
+        t2 = time.process_time()
+        print("SampEn calculation time = " + str(t2 - t1) + " secs")
         self.popup(None, SampEn, "SampEn")
 
     def calculate_Apen_and_Sampen_only(self):
@@ -1278,13 +1290,13 @@ class Ui_MainWindow(object):
         self.button_ApEn_N_stop_description.setText(_translate("MainWindow", "N stop:"))
         self.checkBox_ApEn_N_stop.setText(_translate("MainWindow", ""))
         self.Entropy_tabWidget.setTabText(self.Entropy_tabWidget.indexOf(self.ApEn_tab), _translate("MainWindow", "ApEn"))
-        self.pushButton_SampEn_precision.setText(_translate("MainWindow", "SampEn precision:"))
-        self.checkBox_approx_SampEn_precision.setText(_translate("MainWindow", "approx"))
-        self.checkBox_normal_SampEny_precision.setText(_translate("MainWindow", "normal"))
+        # self.pushButton_SampEn_precision.setText(_translate("MainWindow", "SampEn precision:"))
+        # self.checkBox_approx_SampEn_precision.setText(_translate("MainWindow", "approx"))
+        # self.checkBox_normal_SampEny_precision.setText(_translate("MainWindow", "normal"))
         self.pushButton_SampEn_measure.setText(_translate("MainWindow", "SampEn distance measure:"))
         self.radioButton_Euclidean_2.setText(_translate("MainWindow", "Euclidean"))
         self.radioButton_Chebyshev_2.setText(_translate("MainWindow", "Chebyshev"))
-        self.radioButton_Sampen_distance_measure_both.setText(_translate("MainWindow", "Both"))
+        # self.radioButton_Sampen_distance_measure_both.setText(_translate("MainWindow", "Both"))
         self.pushButton_SampEn_calculation_parameters.setText(_translate("MainWindow", "Calculation parameters:"))
         self.checkBox_SampEn_m.setText(_translate("MainWindow", ""))
         self.checkBox_SampEn_r.setText(_translate("MainWindow", ""))
@@ -1297,10 +1309,10 @@ class Ui_MainWindow(object):
         self.Entropy_tabWidget.setTabText(self.Entropy_tabWidget.indexOf(self.SampEn_tab), _translate("MainWindow", "SampEn"))
         self.pushButton_standardization_description.setText(_translate("MainWindow", "Data standardisation:"))
         #self.Wykres2d.setText(_translate("MainWindow", "wykres 2d"))
-        self.button_2d_chart_description.setText(_translate("MainWindow", "Chose axis to display:"))
+        self.button_2d_chart_description.setText(_translate("MainWindow", "Choose data header to display:"))
         self.charts_tabWidget.setTabText(self.charts_tabWidget.indexOf(self.chart_2d_tab), _translate("MainWindow", "2d chart"))
         #self.comboBox_3d_chart_z.setText(_translate("MainWindow", "3d chart"))
-        self.button_3d_chart_description.setText(_translate("MainWindow", "Chose axes to display:"))
+        self.button_3d_chart_description.setText(_translate("MainWindow", "Choose data headers to display:"))
         self.charts_tabWidget.setTabText(self.charts_tabWidget.indexOf(self.chart_3d_tab), _translate("MainWindow", "3d chart"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.Label_data_characteristic.setText(_translate("MainWindow", "Data characteristic: "))
